@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,14 @@ public class App extends AppCompatActivity  {
         );
 
         setContentView(R.layout.activity_main);
+//        if(ParseUser.getCurrentUser() != null){
+//            goToMainTask();
+//        }
+    }
+
+    public void goToMainTask(View view){
+        Intent intent = new Intent(this, MainTask.class);
+        startActivity(intent);
     }
 
 
@@ -41,23 +50,37 @@ public class App extends AppCompatActivity  {
     }
 
 
-    public void loggingIn(String username, String password){
+    public void loggingIn(View view){
 
-        ParseUser.logInInBackground(username,password, new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-                if(user != null){
+//        ParseUser user = new ParseUser();
+//        user.logOut();
+        EditText usernameText = findViewById(R.id.usernameLogin);
+        EditText passwordText = findViewById(R.id.passwordLogin);
 
-                    Toast.makeText(getApplicationContext(),user.get("strings").toString(), Toast.LENGTH_SHORT).show();
+       boolean  empty_user_pass = usernameText.getText().toString().matches("") || passwordText.getText().toString().matches("" );
 
+        // if the password or username is empty give a toast message otherwise proceed to login and sign up
+        if(empty_user_pass){
+            Toast.makeText(this, "username and password are required", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            ParseUser.logInInBackground(usernameText.getText().toString(),passwordText.getText().toString(), new LogInCallback() {
+                @Override
+                public void done(ParseUser user, ParseException e) {
+                    if(user != null){
 
-                    //Toast.makeText(MainActivity.this,"Logged in", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Login successful", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(view.getContext(), MainTask.class);
+                        startActivity(intent);
+
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
-                else {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+            });
+        }
+
     }
 
 
